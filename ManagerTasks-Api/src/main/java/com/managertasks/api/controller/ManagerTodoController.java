@@ -1,5 +1,6 @@
 package com.managertasks.api.controller;
 
+import com.managertasks.api.service.TodoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
@@ -46,12 +47,19 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/todo")
 public class ManagerTodoController {
 
-    // @Qualifier Example:
-    // When multiple beans of the same type exist, @Qualifier specifies which one to inject
-    // Usage: @Autowired @Qualifier("beanName") - injects bean with specific name
-    // Example: If TodoService has implementations: 'PostgresTodoService' and 'MongoTodoService'
-    // Use @Qualifier("PostgresTodoService") to select the PostgreSQL implementation
-    // String todoServiceName = "postgres"; // This represents the qualifier name
+    // @Qualifier Example - Injecting multiple implementations of the same interface
+    // When multiple beans of the same type exist, @Qualifier specifies which one to
+    // inject
+    // TodoService has two implementations: TodoServiceInMemory and
+    // TodoServicePostgreSQL
+
+    @Autowired
+    @Qualifier("todoServiceInMemory")
+    private TodoService todoServiceInMemory;
+
+    @Autowired
+    @Qualifier("todoServicePostgreSQL")
+    private TodoService todoServicePostgreSQL;
 
     @GetMapping("/health")
     public ResponseEntity<String> health() {
@@ -75,6 +83,20 @@ public class ManagerTodoController {
             @RequestParam(required = false) String status,
             @RequestParam(required = false) String priority) {
         return ResponseEntity.ok("Searching todos with status: " + status + ", priority: " + priority);
+    }
+
+    // @Qualifier Example Endpoint 1:
+    // Using TodoServiceInMemory (in-memory storage, no database persistence)
+    @GetMapping("/all/inmemory")
+    public ResponseEntity<Object> getAllTodosFromMemory() {
+        return ResponseEntity.ok(todoServiceInMemory.getAllTodos());
+    }
+
+    // @Qualifier Example Endpoint 2:
+    // Using TodoServicePostgreSQL (database-backed storage)
+    @GetMapping("/all/database")
+    public ResponseEntity<Object> getAllTodosFromDatabase() {
+        return ResponseEntity.ok(todoServicePostgreSQL.getAllTodos());
     }
 
 }
