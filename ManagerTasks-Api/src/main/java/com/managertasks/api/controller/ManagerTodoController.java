@@ -1,5 +1,7 @@
 package com.managertasks.api.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -43,6 +45,13 @@ import org.springframework.web.bind.annotation.*;
 
 @RequestMapping("/api/v1/todo")
 public class ManagerTodoController {
+
+    // @Qualifier Example:
+    // When multiple beans of the same type exist, @Qualifier specifies which one to inject
+    // Usage: @Autowired @Qualifier("beanName") - injects bean with specific name
+    // Example: If TodoService has implementations: 'PostgresTodoService' and 'MongoTodoService'
+    // Use @Qualifier("PostgresTodoService") to select the PostgreSQL implementation
+    // String todoServiceName = "postgres"; // This represents the qualifier name
 
     @GetMapping("/health")
     public ResponseEntity<String> health() {
