@@ -4,10 +4,21 @@ import jakarta.persistence.*;
 import java.time.Instant;
 import java.util.UUID;
 
+// @Entity Explanation:
+// Marks class as JPA entity (persistent object) mapped to database table
+// Lifecycle: 1) Hibernate/JPA recognizes class as entity during startup
+//            2) Creates entity metadata and mapping information
+//            3) Generates SQL for CREATE/INSERT/UPDATE/DELETE operations
+//            4) Manages object-relational mapping (ORM) between Java objects and database rows
+//            5) Enables CRUD operations through EntityManager/Repository
+// Requirements: Must have @Id field, no-arg constructor, properly annotated fields
+// Database mapping: Class name → table name (unless @Table specifies custom name)
+// Entity instances are managed by Hibernate persistence context
+
 @Entity
 @Table(name = "todos", indexes = {
-    @Index(name = "idx_todos_user_id", columnList = "user_id"),
-    @Index(name = "idx_todos_completed", columnList = "completed")
+        @Index(name = "idx_todos_user_id", columnList = "user_id"),
+        @Index(name = "idx_todos_completed", columnList = "completed")
 })
 public class Todo {
 
