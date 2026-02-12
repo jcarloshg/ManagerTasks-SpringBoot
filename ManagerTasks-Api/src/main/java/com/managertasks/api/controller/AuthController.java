@@ -10,10 +10,20 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+/**
+ * @RestController Lifecycle:
+ * 1. CLASS DETECTION: Spring detects @RestController during component scan
+ * 2. BEAN REGISTRATION: Class is registered as a Spring bean
+ * 3. INSTANTIATION: AuthController instance is created and dependencies (@Autowired AuthService) are injected
+ * 4. REQUEST MAPPING: @RequestMapping("/api/v1/auth") registers URL base path
+ * 5. METHOD MAPPING: Each @PostMapping/@GetMapping registers request handlers
+ * 6. READY: Handles incoming HTTP requests and returns JSON responses (@RestController = @Controller + @ResponseBody)
+ */
 @RestController
 @RequestMapping("/api/v1/auth")
 public class AuthController {
 
+    // Injected during step 3 (INSTANTIATION)
     @Autowired
     private AuthService authService;
 
