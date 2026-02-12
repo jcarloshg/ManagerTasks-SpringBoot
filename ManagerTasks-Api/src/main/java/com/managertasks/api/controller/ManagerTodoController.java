@@ -47,11 +47,14 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/todo")
 public class ManagerTodoController {
 
-    // @Qualifier Example - Injecting multiple implementations of the same interface
-    // When multiple beans of the same type exist, @Qualifier specifies which one to
-    // inject
-    // TodoService has two implementations: TodoServiceInMemory and
-    // TodoServicePostgreSQL
+    // @Qualifier Lifecycle:
+    // 1. BEAN DETECTION: Spring finds multiple beans implementing TodoService interface
+    // 2. AMBIGUITY CHECK: Without @Qualifier, Spring throws NoUniqueBeanDefinitionException
+    // 3. QUALIFIER PARSING: Spring reads @Qualifier("beanName") annotation value
+    // 4. NAME MATCHING: Spring searches ApplicationContext for bean with matching name
+    // 5. BEAN SELECTION: Correct bean instance is selected based on qualifier name
+    // 6. INJECTION: Selected bean is injected into the annotated field
+    // 7. READY: ManagerTodoController has both services available for use
 
     @Autowired
     @Qualifier("todoServiceInMemory")
