@@ -27,6 +27,21 @@ public class TodoServicePostgreSQL implements TodoService {
     @Autowired
     private TodoRepository todoRepository;
 
+    // @Transactional Explanation:
+    // Manages database transactions for methods (automatic commit/rollback)
+    // Lifecycle: 1) Method call detected
+    // 2) Spring starts a new database transaction
+    // 3) All database operations are executed within transaction
+    // 4) If method completes normally → transaction automatically commits
+    // 5) If exception is thrown → transaction automatically rolls back
+    // 6) All changes are either completely saved or completely reverted
+    // Attributes: readOnly=true (prevents writes), propagation (transaction scope),
+    // isolation level
+    // Use cases: @Transactional on write operations (create, update, delete)
+    // @Transactional(readOnly=true) on read operations for optimization
+    // Without @Transactional: Each database operation auto-commits immediately
+    // (risky for multi-step operations)
+
     @Override
     @Transactional
     public Object createTodo(TodoRecord todoRecord) {
