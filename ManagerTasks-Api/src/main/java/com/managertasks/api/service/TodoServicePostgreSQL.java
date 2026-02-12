@@ -12,6 +12,15 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+// @Service Lifecycle:
+// 1. CLASS DETECTION: Spring scans classpath and finds @Service annotation
+// 2. BEAN REGISTRATION: Class is registered as a Spring bean (service layer component)
+// 3. BEAN NAME: Service name "todoServicePostgreSQL" is stored for identification
+// 4. INSTANTIATION: TodoServicePostgreSQL instance is created by Spring
+// 5. DEPENDENCY INJECTION: @Autowired TodoRepository is injected into the service
+// 6. INITIALIZATION: Bean is fully initialized and added to ApplicationContext
+// 7. READY: Service bean is ready to handle business logic and can be injected into controllers
+
 @Service("todoServicePostgreSQL")
 public class TodoServicePostgreSQL implements TodoService {
 
@@ -23,10 +32,9 @@ public class TodoServicePostgreSQL implements TodoService {
     public Object createTodo(TodoRecord todoRecord) {
         // Convert TodoRecord to Todo entity
         Todo todo = new Todo(
-            todoRecord.name(),
-            PriorityEnum.valueOf(todoRecord.priority()),
-            UUID.fromString(todoRecord.userId())
-        );
+                todoRecord.name(),
+                PriorityEnum.valueOf(todoRecord.priority()),
+                UUID.fromString(todoRecord.userId()));
 
         // Set completed status if provided
         if (todoRecord.completed() != null) {
@@ -51,7 +59,7 @@ public class TodoServicePostgreSQL implements TodoService {
     @Transactional(readOnly = true)
     public Object getTodoByUUID(UUID id) {
         Todo todo = todoRepository.findById(id)
-            .orElseThrow(() -> new IllegalArgumentException("Todo not found with ID: " + id));
+                .orElseThrow(() -> new IllegalArgumentException("Todo not found with ID: " + id));
         return convertTodoToMap(todo);
     }
 
@@ -59,33 +67,33 @@ public class TodoServicePostgreSQL implements TodoService {
     @Transactional(readOnly = true)
     public List<Object> getAllTodos() {
         return todoRepository.findAll()
-            .stream()
-            .map(this::convertTodoToMap)
-            .collect(Collectors.toList());
+                .stream()
+                .map(this::convertTodoToMap)
+                .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
     public List<Object> getTodosByUserId(UUID userId) {
         return todoRepository.findByUserId(userId)
-            .stream()
-            .map(this::convertTodoToMap)
-            .collect(Collectors.toList());
+                .stream()
+                .map(this::convertTodoToMap)
+                .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
     public List<Object> getTodosByUserIdAndCompleted(UUID userId, Boolean completed) {
         return todoRepository.findByUserIdAndCompleted(userId, completed)
-            .stream()
-            .map(this::convertTodoToMap)
-            .collect(Collectors.toList());
+                .stream()
+                .map(this::convertTodoToMap)
+                .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
     public List<Object> getTodosByUserIdAndPriority(UUID userId, String priority) {
         return todoRepository.findByUserIdAndPriority(userId, PriorityEnum.valueOf(priority))
-            .stream()
-            .map(this::convertTodoToMap)
-            .collect(Collectors.toList());
+                .stream()
+                .map(this::convertTodoToMap)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -99,7 +107,7 @@ public class TodoServicePostgreSQL implements TodoService {
     @Transactional
     public Object updateTodoByUUID(UUID id, TodoRecord todoRecord) {
         Todo todo = todoRepository.findById(id)
-            .orElseThrow(() -> new IllegalArgumentException("Todo not found with ID: " + id));
+                .orElseThrow(() -> new IllegalArgumentException("Todo not found with ID: " + id));
 
         // Update fields from TodoRecord
         todo.setName(todoRecord.name());
@@ -134,14 +142,13 @@ public class TodoServicePostgreSQL implements TodoService {
     // Helper method to convert Todo entity to Map (for response)
     private Object convertTodoToMap(Todo todo) {
         return java.util.Map.of(
-            "id", todo.getId(),
-            "name", todo.getName(),
-            "priority", todo.getPriority().name(),
-            "completed", todo.getCompleted(),
-            "userId", todo.getUserId(),
-            "createdAt", todo.getCreatedAt(),
-            "updatedAt", todo.getUpdatedAt()
-        );
+                "id", todo.getId(),
+                "name", todo.getName(),
+                "priority", todo.getPriority().name(),
+                "completed", todo.getCompleted(),
+                "userId", todo.getUserId(),
+                "createdAt", todo.getCreatedAt(),
+                "updatedAt", todo.getUpdatedAt());
     }
 
 }

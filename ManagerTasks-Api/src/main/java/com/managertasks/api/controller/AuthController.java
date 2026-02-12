@@ -60,9 +60,18 @@ public class AuthController {
     // Spring automatically deserializes JSON to the specified DTO object
     // Content-Type must be application/json
     // Example: {"username":"john","password":"secret123"} → SignUpRequest object
+
+    // @Valid Explanation:
+    // Triggers validation of the annotated object using constraints defined in the
+    // DTO
+    // Checks all @NotBlank, @Email, @StrongPassword annotations in SignUpRequest
+    // If validation fails, throws MethodArgumentNotValidException (HTTP 400)
+    // Works with Bean Validation (Jakarta Validation) framework
+    // Required for request body validation in Spring
     @PostMapping("/signup")
     public ResponseEntity<TokenResponse> signUp(@Valid @RequestBody SignUpRequest request) {
         TokenResponse response = authService.signUp(request);
+        //
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 

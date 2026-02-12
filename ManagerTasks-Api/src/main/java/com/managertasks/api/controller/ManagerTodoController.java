@@ -3,6 +3,7 @@ package com.managertasks.api.controller;
 import com.managertasks.api.service.TodoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -48,10 +49,13 @@ import org.springframework.web.bind.annotation.*;
 public class ManagerTodoController {
 
     // @Qualifier Lifecycle:
-    // 1. BEAN DETECTION: Spring finds multiple beans implementing TodoService interface
-    // 2. AMBIGUITY CHECK: Without @Qualifier, Spring throws NoUniqueBeanDefinitionException
+    // 1. BEAN DETECTION: Spring finds multiple beans implementing TodoService
+    // interface
+    // 2. AMBIGUITY CHECK: Without @Qualifier, Spring throws
+    // NoUniqueBeanDefinitionException
     // 3. QUALIFIER PARSING: Spring reads @Qualifier("beanName") annotation value
-    // 4. NAME MATCHING: Spring searches ApplicationContext for bean with matching name
+    // 4. NAME MATCHING: Spring searches ApplicationContext for bean with matching
+    // name
     // 5. BEAN SELECTION: Correct bean instance is selected based on qualifier name
     // 6. INJECTION: Selected bean is injected into the annotated field
     // 7. READY: ManagerTodoController has both services available for use
@@ -100,6 +104,46 @@ public class ManagerTodoController {
     @GetMapping("/all/database")
     public ResponseEntity<Object> getAllTodosFromDatabase() {
         return ResponseEntity.ok(todoServicePostgreSQL.getAllTodos());
+    }
+
+    // @ResponseStatus Example 1:
+    // Sets HTTP status code to 201 CREATED when resource is successfully created
+    // Useful when you don't need to return ResponseEntity object
+    @PostMapping("/create/status")
+    @ResponseStatus(HttpStatus.CREATED)
+    @ResponseBody
+    public String createTodoWithStatus() {
+        return "Todo created successfully with HTTP 201 status";
+    }
+
+    // @ResponseStatus Example 2:
+    // Sets HTTP status code to 204 NO_CONTENT when operation is successful but no
+    // content returned
+    // Common for DELETE or UPDATE operations that don't return data
+    @DeleteMapping("/delete/noreturn/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteTodoNoContent(@PathVariable Long id) {
+        // Delete operation - no response body needed, just status code 204
+    }
+
+    // @ResponseBody Example:
+    // Explicitly converts method return value to response body (JSON)
+    // Usually redundant with @RestController, but useful with @Controller
+    @GetMapping("/info")
+    @ResponseBody
+    public String getTodoInfo() {
+        return "This is todo information returned as response body";
+    }
+
+    // @ResponseStatus with Exception Handling Example:
+    // Returns HTTP 400 BAD REQUEST for invalid input
+    @PostMapping("/validate")
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public String validateTodo(@RequestParam(required = true) String name) {
+        if (name == null || name.isEmpty()) {
+            return "Invalid todo name provided";
+        }
+        return "Todo name is valid";
     }
 
 }
