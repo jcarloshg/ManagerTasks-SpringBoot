@@ -12,13 +12,35 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 
+// @RestControllerAdvice Explanation:
+// Marks class as global exception handler for all controllers in the application
+// Combines @ControllerAdvice + @ResponseBody functionality
+// Life cycle: 1) Spring detects @RestControllerAdvice during component scan
+//             2) Registers as a bean for global exception handling
+//             3) Scans for @ExceptionHandler methods
+//             4) When any controller throws exception, matches it to appropriate handler
+//             5) Handler method processes exception and returns JSON response
+// @ExceptionHandler methods: Match specific exception types and provide custom error responses
+// Returns standardized error responses (status, message, timestamp, path) across entire app
+
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    // @ExceptionHandler Explanation:
+    // Marks method as handler for specific exception types
+    // Lifecycle: 1) Exception thrown in any controller method
+    // 2) Spring catches exception and searches for matching @ExceptionHandler
+    // 3) Matches exception type from handler method parameter
+    // 4) Executes handler method logic
+    // 5) Converts returned object to JSON response with specified HTTP status
+    // Parameters: Exception type (automatically caught) + WebRequest (request
+    // metadata)
+    // Return: ResponseEntity with custom error response body and HTTP status code
+
     @ExceptionHandler(DuplicateEmailException.class)
     public ResponseEntity<Map<String, Object>> handleDuplicateEmailException(
-        DuplicateEmailException ex,
-        WebRequest request) {
+            DuplicateEmailException ex,
+            WebRequest request) {
 
         Map<String, Object> body = new HashMap<>();
         body.put("timestamp", Instant.now().toString());
@@ -32,8 +54,8 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<Map<String, Object>> handleBadCredentialsException(
-        BadCredentialsException ex,
-        WebRequest request) {
+            BadCredentialsException ex,
+            WebRequest request) {
 
         Map<String, Object> body = new HashMap<>();
         body.put("timestamp", Instant.now().toString());
@@ -47,8 +69,8 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, Object>> handleMethodArgumentNotValid(
-        MethodArgumentNotValidException ex,
-        WebRequest request) {
+            MethodArgumentNotValidException ex,
+            WebRequest request) {
 
         Map<String, Object> body = new HashMap<>();
         body.put("timestamp", Instant.now().toString());
@@ -56,9 +78,8 @@ public class GlobalExceptionHandler {
         body.put("error", HttpStatus.BAD_REQUEST.getReasonPhrase());
 
         Map<String, String> errors = new HashMap<>();
-        ex.getBindingResult().getFieldErrors().forEach(error ->
-            errors.put(error.getField(), error.getDefaultMessage())
-        );
+        ex.getBindingResult().getFieldErrors()
+                .forEach(error -> errors.put(error.getField(), error.getDefaultMessage()));
         body.put("errors", errors);
         body.put("path", request.getDescription(false).replace("uri=", ""));
 
@@ -67,8 +88,8 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, Object>> handleGlobalException(
-        Exception ex,
-        WebRequest request) {
+            Exception ex,
+            WebRequest request) {
 
         Map<String, Object> body = new HashMap<>();
         body.put("timestamp", Instant.now().toString());
