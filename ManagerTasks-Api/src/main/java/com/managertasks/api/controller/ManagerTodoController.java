@@ -1,12 +1,5 @@
 package com.managertasks.api.controller;
 
-import com.managertasks.api.dto.request.LoginRequest;
-import com.managertasks.api.dto.request.SignUpRequest;
-import com.managertasks.api.dto.response.TokenResponse;
-import com.managertasks.api.service.AuthService;
-import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,9 +8,9 @@ import org.springframework.web.bind.annotation.*;
  *                 1. CLASS DETECTION: Spring detects @RestController during
  *                 component scan
  *                 2. BEAN REGISTRATION: Class is registered as a Spring bean
- *                 3. INSTANTIATION: AuthController instance is created and
- *                 dependencies (@Autowired AuthService) are injected
- *                 4. REQUEST MAPPING: @RequestMapping("/api/v1/auth") registers
+ *                 3. INSTANTIATION: ManagerTodoController instance is created
+ *                 and dependencies are injected
+ *                 4. REQUEST MAPPING: @RequestMapping("/api/v1/todo") registers
  *                 URL base path
  *                 5. METHOD MAPPING: Each @PostMapping/@GetMapping registers
  *                 request handlers
@@ -27,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 // @RequestMapping Lifecycle:
 // 1. PARSING: Spring reads @RequestMapping annotation after class detection
-// 2. REGISTRATION: Base path "/api/v1/auth" is stored in the request mapping
+// 2. REGISTRATION: Base path "/api/v1/todo" is stored in the request mapping
 // registry
 // 3. METHOD BINDING: Combined with method-level mappings (@PostMapping,
 // @GetMapping, etc.)
@@ -48,33 +41,31 @@ import org.springframework.web.bind.annotation.*;
 // 6. RESPONSE: Method executes and returns response (automatically converted to
 // JSON by @RestController)
 
-@RequestMapping("/api/v1/auth")
-public class AuthController {
-
-    // Injected during step 3 (INSTANTIATION)
-    @Autowired
-    private AuthService authService;
-
-    // @RequestBody Explanation:
-    // Binds HTTP request body (JSON) to a method parameter
-    // Spring automatically deserializes JSON to the specified DTO object
-    // Content-Type must be application/json
-    // Example: {"username":"john","password":"secret123"} → SignUpRequest object
-    @PostMapping("/signup")
-    public ResponseEntity<TokenResponse> signUp(@Valid @RequestBody SignUpRequest request) {
-        TokenResponse response = authService.signUp(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
-    }
-
-    @PostMapping("/login")
-    public ResponseEntity<TokenResponse> login(@Valid @RequestBody LoginRequest request) {
-        TokenResponse response = authService.login(request);
-        return ResponseEntity.ok(response);
-    }
+@RequestMapping("/api/v1/todo")
+public class ManagerTodoController {
 
     @GetMapping("/health")
     public ResponseEntity<String> health() {
-        return ResponseEntity.ok("Auth service is healthy");
+        return ResponseEntity.ok("Todo service is healthy");
+    }
+
+    // @PathVariable Example:
+    // Extracts variable from URL path and passes it as method parameter
+    // URL pattern: /api/v1/todo/{id} → id value is extracted from the path
+    @GetMapping("/{id}")
+    public ResponseEntity<String> getTodoById(@PathVariable Long id) {
+        return ResponseEntity.ok("Retrieved todo with ID: " + id);
+    }
+
+    // @RequestParam Example:
+    // Extracts query parameters from URL and passes them as method parameters
+    // URL pattern: /api/v1/todo/search?status=completed&priority=high
+    // Query parameters are optional by default, use required=true to make mandatory
+    @GetMapping("/search/list")
+    public ResponseEntity<String> searchTodos(
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) String priority) {
+        return ResponseEntity.ok("Searching todos with status: " + status + ", priority: " + priority);
     }
 
 }

@@ -16,6 +16,11 @@ import java.util.ArrayList;
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
+    // @Autowired Explanation:
+    // Instructs Spring to automatically inject a bean of type JwtTokenProvider
+    // Spring searches ApplicationContext for a bean matching the type and injects it
+    // Occurs during bean instantiation phase (before the filter is used)
+    // Eliminates need for manual constructor/setter calls: new JwtTokenProvider() or setJwtTokenProvider()
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
 
